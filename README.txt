@@ -1,5 +1,5 @@
 *****NotASnake*****
-ver.1.1
+ver.1.2
 
 To start a game, download NAS_exec and open NotASnake.jar (you should have JVM installed)
 
@@ -19,9 +19,15 @@ V - enable/disable vsync
 M - enable sound (BETA)
 Esc - exit
 
+WHAT'S NEW:
+
 ver.1.1:
 -one player mode with 3 difficulty levels added
 -mechanics fixed
 -exit by Esc added
 -start menu added
+-minor bug fixes
+
+ver.1.2:
+-background added
 -minor bug fixes
