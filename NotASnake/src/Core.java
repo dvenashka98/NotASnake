@@ -1,5 +1,4 @@
 import org.lwjgl.LWJGLException;
-
 import org.lwjgl.input.Mouse;
 import sun.audio.*;
 import org.lwjgl.Sys;
@@ -9,13 +8,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Random;
-
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.Color;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.lwjgl.util.glu.GLU;
+import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
+import org.newdawn.slick.util.ResourceLoader;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLE_FAN;
 
 public class Core {
@@ -29,6 +32,7 @@ public class Core {
     boolean fsflag = false;
     /** "music" flag*/
     public boolean mflag = false;
+    public Texture test;
     int level = 0;
     int startFlag = 0;
     int delta1Increaser = 0;
@@ -87,6 +91,8 @@ public class Core {
         if (level == 3)
             maxVelocity = 0.48f;
 
+        //bckgr
+        bindResources();
 
         while (!Display.isCloseRequested()) {
             int delta = getDelta();
@@ -394,8 +400,6 @@ public class Core {
                         startFlag = 0;
                         delta1Increaser = 0;
                         flag1 = 2;
-                        flag2 = 0;
-                        Display.destroy();
                         x1 = 40;
                         y1 = displayHeight / 2;
                         x2 = displayWidth - 40;
@@ -432,8 +436,6 @@ public class Core {
                         startFlag = 0;
                         delta1Increaser = 0;
                         flag1 = 2;
-                        flag2 = 0;
-                        Display.destroy();
                         x1 = 40;
                         y1 = displayHeight / 2;
                         x2 = displayWidth - 40;
@@ -445,12 +447,12 @@ public class Core {
                 }
         }
         if (startFlag == 0) {
-            font.drawString(250, 100, "NotASnake (v.1.1)", Color.pink);
+            font.drawString(250, 100, "NotASnake v.1.2", Color.pink);
             font.drawString(250, 210, "Press F to enable/disable fullscreen", Color.pink);
             font.drawString(250, 240, "Press V to enable/disable vsync", Color.pink);
             font.drawString(50, 270, "(enabling both of them now is highly recommended)", Color.pink);
             font.drawString(210, 370, "Press button on the keyboard:", Color.pink);
-            font.drawString(210, 430, "- 2: two player", Color.pink);
+            font.drawString(210, 430, "- 2: two players", Color.pink);
             font.drawString(210, 460, "- E: Easy level", Color.green);
             font.drawString(210, 490, "- H: Hard level", Color.orange);
             font.drawString(210, 520, "- I: Insane level", Color.red);
@@ -478,32 +480,24 @@ public class Core {
                     if (Keyboard.getEventKey() == Keyboard.KEY_2) {
                         level = 0;
                         startFlag = 1;
-                        flag2 = 0;
-                        Display.destroy();
                         start();
                     }
 
                     if (Keyboard.getEventKey() == Keyboard.KEY_E) {
                         level = 1;
                         startFlag = 1;
-                        flag2 = 0;
-                        Display.destroy();
                         start();
                     }
 
                     if (Keyboard.getEventKey() == Keyboard.KEY_H) {
                         level = 3;
                         startFlag = 1;
-                        flag2 = 0;
-                        Display.destroy();
                         start();
                     }
 
                     if (Keyboard.getEventKey() == Keyboard.KEY_I) {
                         level = 4;
                         startFlag = 1;
-                        flag2 = 0;
-                        Display.destroy();
                         start();
                     }
                 }
@@ -560,9 +554,33 @@ public class Core {
         // Clear The Screen And The Depth Buffer
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
+        GL11.glLoadIdentity();
+
+        //draw background
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, test.getTextureID());
+        GL11.glPushMatrix();
+        GL11.glColor3f(1.0f, 1.0f,1.0f);
+        GL11.glTranslatef( 0,-50 , 0);
+        //  GL11.glRotatef(rotate, 0.0F, 0.0F, 1.0F); // повернуть объект.
+        // GL11.glTranslatef(-width / 2, -height / 2, 0.0F); // сдвиг по координате x на половину для вращения в центре.
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glTexCoord2f(0.0F, 1.0F);
+        GL11.glVertex2f(0, 0);
+        GL11.glTexCoord2f(1.0F, 1.0F);
+        GL11.glVertex2f(1830, 0);
+        GL11.glTexCoord2f(1.0F, 0);
+        GL11.glVertex2f(1830, 850);
+        GL11.glTexCoord2f(0.0F, 0.0F);
+        GL11.glVertex2f(0, 850);
+        GL11.glEnd();
+        GL11.glPopMatrix();
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+
         // draw rectangle1
         GL11.glPushMatrix();
-        GL11.glColor3f(1.0f, 0.5f, 1.0f);
+        GL11.glColor3f(1.0f, 0.2f, 0.0f);
         GL11.glTranslatef(x1, y1, 0);
         GL11.glRotatef(rotation, 0f, 0f, 1f);
         GL11.glTranslatef(-x1, -y1, 0);
@@ -577,7 +595,7 @@ public class Core {
 
         //draw rectangle2
         GL11.glPushMatrix();
-        GL11.glColor3f(0.5f, 1.0f, 1.0f);
+        GL11.glColor3f(0.0f, 0.2f, 1.0f);
         GL11.glTranslatef(x2, y2, 0);
         GL11.glRotatef(rotation, 0f, 0f, 1f);
         GL11.glTranslatef(-x2, -y2, 0);
@@ -592,7 +610,6 @@ public class Core {
 
         //draw ball
         GL11.glPushMatrix();
-        GL11.glColor3f(1.0f, 1.0f, 0.5f);
         GL11.glTranslatef(x3, y3, 0);
         GL11.glRotatef(rotation, 0f, 0f, 1f);
         GL11.glTranslatef(-x3, -y3, 0);
@@ -606,14 +623,38 @@ public class Core {
         GL11.glBegin(GL_TRIANGLE_FAN);
         for(float a = 0.0f; a < 360.0f; a += step) {
             theta = 2.0f * pi * a / 180.0f;
-            GL11.glColor3f(1.0f, 1.0f,0.5f);
+            GL11.glColor3f(1.0f, 1.0f,1.0f);
             GL11.glVertex2d(x3 + radius * Math.cos(theta),y3 + radius * Math.sin(theta));
         }
         GL11.glEnd();
         GL11.glPopMatrix();
-
     }
 
+    public void bindResources() {
+        test = loadTexture("BB.jpg");
+    }
+
+
+    private Texture loadTexture(String resource)
+    {
+        Texture texture = null;
+        try
+        {
+            texture = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream(resource));
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger(Core.class.getName()).log(Level.SEVERE, null, ex);
+            clearResources(true);
+        }
+        return texture;
+    }
+
+    private void clearResources(boolean hasCrash) {
+        System.out.println(GLU.gluErrorString(GL11.glGetError()));
+        Display.destroy();
+        System.exit(hasCrash ? 1 : 0);
+    }
     public void music(String s, boolean mflag) {
         if (mflag == true) return;
         AudioPlayer MGP = AudioPlayer.player;
